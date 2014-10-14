@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8BA2C69B19DC84E900D62966 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA2C69A19DC84E900D62966 /* Matrix.swift */; };
 		8BAB103619CB09FF00A470EC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAB103519CB09FF00A470EC /* AppDelegate.swift */; };
 		8BAB103819CB09FF00A470EC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAB103719CB09FF00A470EC /* ViewController.swift */; };
 		8BAB103B19CB09FF00A470EC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BAB103919CB09FF00A470EC /* Main.storyboard */; };
@@ -26,6 +27,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8BA2C69A19DC84E900D62966 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		8BAB103019CB09FF00A470EC /* Matrix Rain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Matrix Rain.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BAB103419CB09FF00A470EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BAB103519CB09FF00A470EC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 			children = (
 				8BAB103519CB09FF00A470EC /* AppDelegate.swift */,
 				8BAB103719CB09FF00A470EC /* ViewController.swift */,
+				8BA2C69A19DC84E900D62966 /* Matrix.swift */,
 				8BAB103919CB09FF00A470EC /* Main.storyboard */,
 				8BAB103C19CB09FF00A470EC /* Images.xcassets */,
 				8BAB103E19CB09FF00A470EC /* LaunchScreen.xib */,
@@ -214,6 +217,7 @@
 			files = (
 				8BAB103819CB09FF00A470EC /* ViewController.swift in Sources */,
 				8BAB103619CB09FF00A470EC /* AppDelegate.swift in Sources */,
+				8BA2C69B19DC84E900D62966 /* Matrix.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +411,7 @@
 				8BAB105119CB0A0000A470EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BAB105219CB0A0000A470EC /* Build configuration list for PBXNativeTarget "Matrix RainTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +420,7 @@
 				8BAB105419CB0A0000A470EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

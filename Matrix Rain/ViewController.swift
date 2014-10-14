@@ -8,18 +8,67 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, UICollisionBehaviorDelegate {
+    
+    var lanes: [Lane]?
+    var animator: UIDynamicAnimator!
+    var matrixRainBehavior: MatrixRainBehavior = MatrixRainBehavior()
+    
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        view.backgroundColor = UIColor.blackColor()
+        
+        let lanesCount = Int(view.bounds.width / CGFloat(20.0))
+        lanes = Lane.splitView(view, intoLanesOfType: .Vertical, count: lanesCount)
+        
+//        for lane in lanes! as [Lane] {
+//            let backgroundView = UIView(frame: lane.frame)
+//            backgroundView.backgroundColor = UIColor.grayColor()
+//            backgroundView.alpha = CGFloat( CGFloat(arc4random_uniform(UInt32(lanes!.count))) / CGFloat(lane.wideness) )
+//            view.addSubview(backgroundView)
+//        }
+        
+        animator = UIDynamicAnimator(referenceView: view)
+        animator.addBehavior(matrixRainBehavior)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        makeItRain()
+        
+//        let tv = UIView(frame: view.bounds)
+//        let gl = BackgroundLayer.darkGreyGradient()
+//        gl.frame = tv.bounds
+//        tv.layer.insertSublayer(gl, atIndex: 0)
+//        tv.layer.zPosition = CGFloat(MAXFLOAT);
+//        view.addSubview(tv)
     }
-
+    
+    func makeItRain() {
+        for lane in lanes! {
+            let randomDelay = Double.random(min: 0.0, max: 5.0)
+            NSTimer.scheduledTimerWithTimeInterval(randomDelay, target: self, selector: "addRainDropToLane:", userInfo: lane, repeats: false)
+        }
+    }
+    
+    func addRainDropToLane(sender: NSTimer) {
+        if let lane = sender.userInfo as? Lane {
+            let rainDrop = MatrixRainDrop()
+            rainDrop.parentLane = lane
+            lane.setInitialPositionForView(rainDrop)
+            self.view.addSubview(rainDrop)
+            self.matrixRainBehavior.addItem(rainDrop)
+        }
+    }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
 
 }
-
