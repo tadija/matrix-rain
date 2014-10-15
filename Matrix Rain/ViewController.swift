@@ -12,7 +12,7 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
     
     var lanes: [Lane]?
     var animator: UIDynamicAnimator!
-    var matrixRainBehavior: MatrixRainBehavior = MatrixRainBehavior()
+    lazy var matrixRainBehavior = MatrixRainBehavior()
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -39,18 +39,11 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        
         makeItRain()
-        
-//        let tv = UIView(frame: view.bounds)
-//        let gl = BackgroundLayer.darkGreyGradient()
-//        gl.frame = tv.bounds
-//        tv.layer.insertSublayer(gl, atIndex: 0)
-//        tv.layer.zPosition = CGFloat(MAXFLOAT);
-//        view.addSubview(tv)
     }
     
     func makeItRain() {
+        matrixRainBehavior.addGradientLayer()
         for lane in lanes! {
             let randomDelay = Double.random(min: 0.0, max: 5.0)
             NSTimer.scheduledTimerWithTimeInterval(randomDelay, target: self, selector: "addRainDropToLane:", userInfo: lane, repeats: false)
@@ -62,8 +55,8 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
             let rainDrop = MatrixRainDrop()
             rainDrop.parentLane = lane
             lane.setInitialPositionForView(rainDrop)
-            self.view.addSubview(rainDrop)
-            self.matrixRainBehavior.addItem(rainDrop)
+            view.addSubview(rainDrop)
+            matrixRainBehavior.addItem(rainDrop)
         }
     }
     
