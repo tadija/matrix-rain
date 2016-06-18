@@ -14,7 +14,7 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
     var animator: UIDynamicAnimator!
     lazy var matrixRainBehavior = MatrixRainBehavior()
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
@@ -46,7 +46,9 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
         matrixRainBehavior.addGradientLayer()
         for lane in lanes! {
             let randomDelay = Double.random(min: 0.0, max: 5.0)
-            NSTimer.scheduledTimerWithTimeInterval(randomDelay, target: self, selector: "addRainDropToLane:", userInfo: lane, repeats: false)
+            NSTimer.scheduledTimerWithTimeInterval(randomDelay,
+                                                   target: self, selector: #selector(addRainDropToLane(_:)),
+                                                   userInfo: lane, repeats: false)
         }
     }
     
