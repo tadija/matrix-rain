@@ -119,15 +119,11 @@ class MatrixRainDrop: UILabel {
     }
     
     @objc func randomizeLastCharacter() {
-        DispatchQueue.global().async {
-            let randomIndex = Int.random(min: 0, max: self.chars.count - 1)
-            let randomChar = self.chars[randomIndex]
-            let matrixString = NSMutableAttributedString(attributedString: self.attributedText!)
-            matrixString.replaceCharacters(in: NSMakeRange(matrixString.string.count - 2, 1), with: String(randomChar))
-            DispatchQueue.main.async {
-                self.attributedText = matrixString
-            }
-        }
+        let randomIndex = Int.random(min: 0, max: self.chars.count - 1)
+        let randomChar = self.chars[randomIndex]
+        let matrixString = NSMutableAttributedString(attributedString: self.attributedText!)
+        matrixString.replaceCharacters(in: NSMakeRange(matrixString.string.count - 2, 1), with: String(randomChar))
+        self.attributedText = matrixString
     }
     
     func updateAttributes() {
@@ -141,13 +137,9 @@ class MatrixRainDrop: UILabel {
     }
     
     func randomize(completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            self.attributedText = NSMutableAttributedString(string: self.randomMatrixString())
-            DispatchQueue.main.sync {
-                self.updateAttributes()
-                completion()
-            }
-        }
+        self.attributedText = NSMutableAttributedString(string: self.randomMatrixString())
+        self.updateAttributes()
+        completion()
     }
 
 }
