@@ -10,13 +10,13 @@ import UIKit
 import QuartzCore
 
 extension Int {
-    static func random(min min: Int = 0, max: Int = Int.max) -> Int {
+    static func random(min: Int = 0, max: Int = Int.max) -> Int {
         return Int(arc4random_uniform(UInt32((max - min) + 1))) + min
     }
 }
 
 extension Double {
-    static func random(min min: Double = 0.0, max: Double = 1.0) -> Double {
+    static func random(min: Double = 0.0, max: Double = 1.0) -> Double {
         let r = Double(arc4random()) / Double(UInt32.max)
         return (r * (max - min)) + min
     }
@@ -80,8 +80,8 @@ class MatrixRainDrop: UILabel {
     var parentLane: Lane?
     
     // half width katakana characters + latin numerics + new line characters \n
-    lazy var chars = Array("ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789".characters)
-    lazy var newLineChars = Array("\n\n\n\n\n".characters)
+    lazy var chars = Array("ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789")
+    lazy var newLineChars = Array("\n\n\n\n\n")
     
     var length: Int {
         return attributedText!.length
@@ -92,15 +92,15 @@ class MatrixRainDrop: UILabel {
     }
     
     init() {
-        super.init(frame: CGRectZero)
+        super.init(frame: .zero)
         numberOfLines = 0
-        layer.opaque = true
+        layer.isOpaque = true
         layer.masksToBounds = false
         layer.shouldRasterize = true
         attributedText = NSMutableAttributedString(string: randomMatrixString())
         updateAttributes()
         let randomDelay = Double.random(min: 0.2, max: 0.5)
-        NSTimer.scheduledTimerWithTimeInterval(randomDelay, target: self, selector: #selector(MatrixRainDrop.randomizeLastCharacter), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: randomDelay, target: self, selector: #selector(MatrixRainDrop.randomizeLastCharacter), userInfo: nil, repeats: true)
     }
     
     func randomMatrixString() -> String {
@@ -110,7 +110,7 @@ class MatrixRainDrop: UILabel {
         
         for _ in 0...randomLength {
             let randomIndex = Int.random(min: 0, max: charsCount - 1)
-            var matrixChars = chars + newLineChars
+            let matrixChars = chars + newLineChars
             let char = matrixChars[randomIndex]
             randomString += String(char) + "\n"
         }
@@ -118,36 +118,36 @@ class MatrixRainDrop: UILabel {
         return randomString
     }
     
-    func randomizeLastCharacter() {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
+    @objc func randomizeLastCharacter() {
+        DispatchQueue.global().async {
             let randomIndex = Int.random(min: 0, max: self.chars.count - 1)
             let randomChar = self.chars[randomIndex]
             let matrixString = NSMutableAttributedString(attributedString: self.attributedText!)
-            matrixString.replaceCharactersInRange(NSMakeRange(matrixString.string.characters.count - 2, 1), withString: String(randomChar))
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            matrixString.replaceCharacters(in: NSMakeRange(matrixString.string.count - 2, 1), with: String(randomChar))
+            DispatchQueue.main.async {
                 self.attributedText = matrixString
-            })
-        })
+            }
+        }
     }
     
     func updateAttributes() {
         let matrixString = NSMutableAttributedString(attributedString: attributedText!)
-        matrixString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(20), range: NSMakeRange(0, length - 1))
-        matrixString.addAttribute(NSBackgroundColorAttributeName, value: UIColor.blackColor(), range: NSMakeRange(0, length - 1))
-        matrixString.addAttribute(NSForegroundColorAttributeName, value: UIColor.greenColor(), range: NSMakeRange(0, length - 2))
-        matrixString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(length - 2, 1))
+        matrixString.addAttribute(NSAttributedString.Key.font, value: UIFont.boldSystemFont(ofSize: 20), range: NSMakeRange(0, length - 1))
+        matrixString.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.black, range: NSMakeRange(0, length - 1))
+        matrixString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.green, range: NSMakeRange(0, length - 2))
+        matrixString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.white, range: NSMakeRange(length - 2, 1))
         attributedText = matrixString
         sizeToFit()
     }
     
-    func randomize(completion: () -> Void) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
+    func randomize(completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
             self.attributedText = NSMutableAttributedString(string: self.randomMatrixString())
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.sync {
                 self.updateAttributes()
                 completion()
-            })
-        })
+            }
+        }
     }
 
 }
@@ -184,7 +184,7 @@ class MatrixRainBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
             gravity.addItem(rainDrop)
             animationOptions.addItem(rainDrop)
             collision.addItem(rainDrop)
-            createCollisionBoundaryForRainDrop(rainDrop)
+            createCollisionBoundaryForRainDrop(rainDrop: rainDrop)
         }
     }
     
@@ -193,7 +193,7 @@ class MatrixRainBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
             gravity.removeItem(rainDrop)
             animationOptions.removeItem(rainDrop)
             collision.removeItem(rainDrop)
-            collision.removeBoundaryWithIdentifier(rainDrop.hash)
+            collision.removeBoundary(withIdentifier: rainDrop.hash as NSCopying)
         }
     }
     
@@ -202,35 +202,34 @@ class MatrixRainBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
             if let lane = rainDrop.parentLane {
                 let fromPoint = CGPoint(x: CGFloat(lane.position), y: matrixView.frame.size.height + rainDrop.frame.size.height + 100);
                 let toPoint = CGPoint(x: CGFloat(lane.position + lane.wideness), y: matrixView.frame.size.height + rainDrop.frame.size.height + 100)
-                collision.addBoundaryWithIdentifier(rainDrop.hash, fromPoint: fromPoint, toPoint: toPoint)
+                collision.addBoundary(withIdentifier: rainDrop.hash as NSCopying, from: fromPoint, to: toPoint)
             }
         }
     }
     
-    func collisionBehavior(behavior: UICollisionBehavior, beganContactForItem item: UIDynamicItem, withBoundaryIdentifier identifier: NSCopying?, atPoint p: CGPoint) {
+    func collisionBehavior(_ behavior: UICollisionBehavior, beganContactFor item: UIDynamicItem, withBoundaryIdentifier identifier: NSCopying?, at p: CGPoint) {
         if let rainDrop = item as? MatrixRainDrop {
             if let animator = dynamicAnimator {
-                rainDrop.randomize({ () -> Void in
-                    self.collision.removeBoundaryWithIdentifier(rainDrop.hash)
-                    self.createCollisionBoundaryForRainDrop(rainDrop)
-                    rainDrop.parentLane?.setInitialPositionForView(rainDrop)
-                    animator.updateItemUsingCurrentState(rainDrop)
+                rainDrop.randomize(completion: { () -> Void in
+                    self.collision.removeBoundary(withIdentifier: rainDrop.hash as NSCopying)
+                    self.createCollisionBoundaryForRainDrop(rainDrop: rainDrop)
+                    rainDrop.parentLane?.setInitialPositionForView(contentView: rainDrop)
+                    animator.updateItem(usingCurrentState: rainDrop)
                 })
             }
         }
     }
     
     var gradientLayer: CAGradientLayer {
-        let colorDark = UIColor(white: 0, alpha: 0.4).CGColor
-        let colorLight = UIColor(white: 0, alpha: 0.1).CGColor
-        let colorClear = UIColor(white: 0, alpha: 0.0).CGColor
+        let colorDark = UIColor(white: 0, alpha: 0.4).cgColor
+        let colorLight = UIColor(white: 0, alpha: 0.1).cgColor
+        let colorClear = UIColor(white: 0, alpha: 0.0).cgColor
             
         let colors = NSArray(objects: colorDark, colorLight, colorClear, colorLight, colorDark)
-        let locations = [0.1, 0.2, 0.5, 0.8, 0.9]
     
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = colors as [AnyObject]
-        gradientLayer.locations = locations
+        gradientLayer.locations = [0.1, 0.2, 0.5, 0.8, 0.9]
         
         return gradientLayer
     }
@@ -240,7 +239,7 @@ class MatrixRainBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
             let gradientView = UIView(frame: view.bounds)
             let gradient = gradientLayer
             gradient.frame = gradientView.bounds
-            gradientView.layer.insertSublayer(gradient, atIndex: 0)
+            gradientView.layer.insertSublayer(gradient, at: 0)
             gradientView.layer.zPosition = CGFloat(MAXFLOAT)
             view.addSubview(gradientView)
         }
